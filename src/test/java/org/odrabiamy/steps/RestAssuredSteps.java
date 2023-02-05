@@ -1,35 +1,44 @@
 package org.odrabiamy.steps;
+
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import io.restassured.response.ValidatableResponse;
+import org.odrabiamy.model.User;
+import org.odrabiamy.utils.ObjectConverter;
 
-public class RestAssuredSteps{
-    public static void main(String[] args) {
-        // Ustawienie adresu URL dla wszystkich zapytań
-        RestAssured.baseURI = "https://petstore.swagger.io/v2";
+public class RestAssuredSteps {
 
-        // Stworzenie nowego użytkownika
-        RequestSpecification createRequest = RestAssured.given()
+    private ValidatableResponse response;
+    User user;
+
+    public void createUser(User user) {
+        this.user = user;
+        response = RestAssured.given()
                 .header("Content-Type", "application/json")
-                .body("{\"username\":\"user1\",\"firstName\":\"First\",\"lastName\":\"Last\",\"email\":\"email@example.com\",\"password\":\"password\",\"phone\":\"123-456-7890\",\"userStatus\":0}");
-        Response createResponse = createRequest.post("/user");
-        System.out.println("Stworzenie użytkownika: " + createResponse.getStatusCode());
+                .body(ObjectConverter.convertToJson(user))
+                .when()
+                .post("/user")
+                .then()
+                .statusCode(200);
+    }
 
-        // Logowanie użytkownika
-        RequestSpecification loginRequest = RestAssured.given()
+    public void logUserIntoSystem() {
+        response = RestAssured.given()
                 .header("Content-Type", "application/json")
-                .queryParam("username", "user1")
-                .queryParam("password", "password");
-        Response loginResponse = loginRequest.get("/user/login");
-        System.out.println("Logowanie użytkownika: " + loginResponse.getStatusCode());
-        String apiKey = "special-key";
+                .params("username", user.getUsername(), "password", user.getPassword())
+                .when()
+                .get("/user/login")
+                .then()
+                .statusCode(200);
+    }
 
-        // Aktualizacja użytkownika
-        RequestSpecification updateRequest = RestAssured.given()
+    public void updateUser() {
+        user.setPassowrd("newPassword");
+        response = RestAssured.given()
                 .header("Content-Type", "application/json")
-                .header("api_key", apiKey)
-                .body("{\"firstName\":\"UpdatedFirst\"}");
-        Response updateResponse = updateRequest.put("/user/user1");
-        System.out.println("Aktualizacja użytkownika: " + updateResponse.getStatusCode());
+                .body(ObjectConverter.convertToJson(user))
+                .when()
+                .put("/user/" + user.getUsername())
+                .then()
+                .statusCode(200);
     }
 }
