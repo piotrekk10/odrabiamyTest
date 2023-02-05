@@ -1,4 +1,4 @@
-package org.odrabiamy.tests;
+package org.odrabiamy.uiTests;
 
 import org.junit.jupiter.api.Test;
 import org.odrabiamy.pageobjects.UltimateqaApp;

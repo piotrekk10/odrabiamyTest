@@ -1,4 +1,4 @@
-package org.odrabiamy.tests;
+package org.odrabiamy.uiTests;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
